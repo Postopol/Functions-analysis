@@ -1,0 +1,5 @@
+{
+  "name": "GovTech Function Map",
+  "description": "Interactive map visualizing functional duplication and collisions between and within government ministries.",
+  "requestFramePermissions": []
+}
