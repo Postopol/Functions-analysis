@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { GovData, Ministry, ExternalCollision } from '../data';
 import { motion, AnimatePresence } from 'motion/react';
-import { AlertTriangle, ArrowRight, Building, Network } from 'lucide-react';
+import { AlertTriangle, ArrowRight, Building, Network, Activity } from 'lucide-react';
 
 interface MacroViewProps {
   data: GovData;
@@ -19,6 +19,12 @@ export default function MacroView({ data, onSelectMinistry }: MacroViewProps) {
       if (c.target === minId) connected.add(c.source);
     });
     return connected;
+  };
+
+  const getWorkloadColor = (index: number) => {
+    if (index < 100) return 'text-green-600 bg-green-100 border-green-200';
+    if (index <= 120) return 'text-yellow-600 bg-yellow-100 border-yellow-200';
+    return 'text-red-600 bg-red-100 border-red-200';
   };
 
   return (
@@ -60,14 +66,29 @@ export default function MacroView({ data, onSelectMinistry }: MacroViewProps) {
                   <div className="p-3 bg-slate-100 rounded-lg text-slate-700">
                     <Building className="w-6 h-6" />
                   </div>
-                  <div className="text-xs font-bold px-2 py-1 bg-slate-100 text-slate-600 rounded-full">
-                    {min.shortName}
+                  <div className="flex flex-col items-end gap-2">
+                    <div className="text-xs font-bold px-2 py-1 bg-slate-100 text-slate-600 rounded-full">
+                      {min.shortName}
+                    </div>
+                    <div className={`text-[10px] font-bold px-2 py-1 rounded-full border flex items-center gap-1 ${getWorkloadColor(min.workload.index)}`}>
+                      <Activity className="w-3 h-3" />
+                      Нагрузка: {min.workload.index}%
+                    </div>
                   </div>
                 </div>
                 <h3 className="font-semibold text-slate-900 leading-tight mb-2">{min.name}</h3>
-                <p className="text-sm text-slate-500">
-                  Подразделений: {min.departments.length}
-                </p>
+                <div className="flex items-center gap-4 text-sm text-slate-500 mt-3">
+                  <div className="flex items-center gap-1">
+                    <Network className="w-4 h-4" />
+                    <span>Подразделений: {min.departments.length}</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                    <span>Штат: {min.staffCount.toLocaleString('ru-RU')} чел.</span>
+                  </div>
+                </div>
                 
                 {/* Collision Indicators */}
                 {data.externalCollisions.some(c => c.source === min.id || c.target === min.id) && (
